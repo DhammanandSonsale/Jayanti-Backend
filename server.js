@@ -6,19 +6,17 @@ import dotenv from "dotenv";
 import memberRoutes from "./routes/memberRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 
-
-
 dotenv.config();
 
 const app = express();
 
-// Middleware
+// ✅ Middleware
 app.use(cors({
-  origin: "*", // Or your frontend URL
+  origin: "*", // For production, replace "*" with your frontend URL
 }));
-app.use(express.json());
+app.use(express.json()); // Needed to parse JSON in POST requests
 
-// MongoDB Connection
+// ✅ MongoDB Connection
 const connectToDatabase = async () => {
   try {
     const mongoUri = process.env.MONGODB_URI;
@@ -32,20 +30,20 @@ const connectToDatabase = async () => {
     console.log("✅ MongoDB connected successfully!");
   } catch (error) {
     console.error("❌ MongoDB connection error:", error.message);
-    process.exit(1); // Exit if DB connection fails
+    process.exit(1);
   }
 };
 
-// Routes
-app.use("/api/admin-login", adminRoutes);
+// ✅ Routes
+app.use("/api/admin-login", adminRoutes); // Admin login route
+app.use("/api/members", memberRoutes);    // Members route
 
-app.use("/api/members", memberRoutes);
-
+// Health check
 app.get("/api/health", (req, res) => {
   res.json({ status: "Server is running" });
 });
 
-// Start server after DB connection
+// ✅ Start server after DB connection
 const PORT = process.env.PORT || 5000;
 
 connectToDatabase().then(() => {
