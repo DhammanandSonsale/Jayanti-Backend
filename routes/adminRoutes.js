@@ -1,13 +1,13 @@
 import express from "express";
 const router = express.Router();
 
-router.post("/login", (req, res) => {
+router.post("/", (req, res) => {
   const { userId, password } = req.body;
 
   if (userId === process.env.ADMIN_NAME && password === process.env.ADMIN_PASSWORD) {
-    res.json({ success: true });
+    return res.json({ success: true, message: "Login successful" });
   } else {
-    res.status(401).json({ success: false, message: "Invalid ID or password" });
+    return res.status(401).json({ success: false, message: "Invalid ID or password" });
   }
 });
 
