@@ -4,6 +4,9 @@ import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
 import memberRoutes from "./routes/memberRoutes.js";
+import adminRoutes from "./routes/adminRoutes.js";
+
+
 
 dotenv.config();
 
@@ -32,6 +35,8 @@ const connectToDatabase = async () => {
 };
 
 // Routes
+app.use("/api/admin", adminRoutes);
+
 app.use("/api/members", memberRoutes);
 
 app.get("/api/health", (req, res) => {
