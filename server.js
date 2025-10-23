@@ -13,10 +13,37 @@ app.use(cors())
 app.use(express.json())
 
 // MongoDB Connection
-mongoose
-  .connect(process.env.MONGODB_URI || MONGO_URL || "mongodb://localhost:27017/ambedkar-jayanti")
-  .then(() => console.log("MongoDB connected"))
-  .catch((err) => console.log("MongoDB connection error:", err))
+let isConnected = false; // track connection status
+
+const connectToDatabase = async () => {
+  if (isConnected) return; // already connected
+
+  try {
+    const mongoUri = process.env.MONGODB_URI || "mongodb://localhost:27017/ambedkar-jayanti";
+
+    await mongoose.connect(mongoUri, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+
+    isConnected = true; // mark as connected
+    console.log("MongoDB connected");
+  } catch (error) {
+    console.error("MongoDB connection error:", error);
+    throw error; // throw so request fails if DB not connected
+  }
+};
+
+// Middleware to connect before handling requests
+app.use(async (req, res, next) => {
+  try {
+    await connectToDatabase();
+    next();
+  } catch (err) {
+    res.status(500).json({ error: "Database connection failed" });
+  }
+});
+
 
 // Routes
 app.use("/api/members", memberRoutes)
@@ -26,7 +53,9 @@ app.get("/api/health", (req, res) => {
   res.json({ status: "Server is running" })
 })
 
-const PORT = process.env.PORT || 5000
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`)
-})
+// const PORT = process.env.PORT || 5000
+// app.listen(PORT, () => {
+//   console.log(`Server running on port ${PORT}`)
+// })
+
+export default app;
