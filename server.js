@@ -35,7 +35,7 @@ const connectToDatabase = async () => {
 };
 
 // Routes
-app.use("/api/admin", adminRoutes);
+app.use("/api/admin-login", adminRoutes);
 
 app.use("/api/members", memberRoutes);
 
